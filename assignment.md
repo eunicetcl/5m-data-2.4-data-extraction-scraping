@@ -37,6 +37,77 @@ Answer:
 
 ```python
 
+# Check the pagination bar on the first page
+r = requests.get("https://www.scrapethissite.com/pages/forms/?page_num=1")
+soup = BeautifulSoup(r.text, "html.parser")
+
+# Print entire pagination HTML
+pagination = soup.find("ul", class_="pagination")
+print("Pagination HTML:")
+print(pagination)
+
+# Print the specific Next button to verify existence
+next_btn = soup.find("a", {"aria-label": "Next"})
+print("\nNext button detected:")
+print(next_btn)
+
+#Start Web Scraping
+import requests
+from bs4 import BeautifulSoup
+import time
+
+rows = []
+page = 1
+
+while True:
+    print(f"Scraping in progress for page {page}...")
+
+    try:
+        r = requests.get(
+            f"https://www.scrapethissite.com/pages/forms/?page_num={page}",
+            timeout=3
+        )
+    except requests.exceptions.Timeout:
+        print(f"Page {page} timed out. Retrying...")
+        time.sleep(0.5)
+        continue
+
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    # Extract rows from the current page
+    for row_dict in parse_and_extract_rows(soup):
+        rows.append(row_dict)
+
+    # Detect the Next page button
+    next_btn = soup.find("a", {"aria-label": "Next"})
+
+    if next_btn:
+        page += 1
+       
+    else:
+        print("Reach end of all pages. Congrats, Scraping complete!")
+        break
+
+#Display them in Pandas in a scrollable table, i change the color fo the table. 
+
+from IPython.display import HTML
+import pandas as pd
+
+df = pd.DataFrame(rows)
+
+HTML(f'''
+<div style="
+    height:400px;
+    overflow:auto;
+    border:1px solid #ccc;
+    padding:10px;
+    border-radius:6px;
+    background-color:white;
+    color:black;
+">
+    {df.to_html(index=False)}
+</div>
+
 ```
 
 ## Submission
