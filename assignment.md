@@ -37,6 +37,12 @@ Answer:
 
 ```python
 
+import requests
+from bs4 import BeautifulSoup
+import time
+import pandas as pd
+from IPython.display import HTML
+
 # Check the pagination bar on the first page
 r = requests.get("https://www.scrapethissite.com/pages/forms/?page_num=1")
 soup = BeautifulSoup(r.text, "html.parser")
@@ -107,8 +113,7 @@ HTML(f'''
 ">
     {df.to_html(index=False)}
 </div>
-
-```
+''')
 
 ## Submission
 
